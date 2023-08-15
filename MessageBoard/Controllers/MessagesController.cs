@@ -22,10 +22,23 @@ namespace MessageBoard.Controllers
 
         // GET: api/Messages
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Message>>> Get()
+        public async Task<List<Message>> Get(string subject, string group)
         {
-            return await _db.Messages.ToListAsync();
+            IQueryable<Message> query = _db.Messages.AsQueryable();
+
+            if (subject != null)
+            {
+                query = query.Where(entry => entry.Subject.Contains(subject));
+            }
+
+            if (group != null)
+            {
+                query = query.Where(entry => entry.Group.Contains(group));
+            }
+
+            return await query.ToListAsync();
         }
+
 
         // GET: api/Messages/5
         [HttpGet("{id}")]
@@ -74,30 +87,30 @@ namespace MessageBoard.Controllers
 
         // POST: api/Messages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Message>> PostMessage(Message message)
-        {
-            _db.Messages.Add(message);
-            await _db.SaveChangesAsync();
+        // [HttpPost]
+        // public async Task<ActionResult<Message>> PostMessage(Message message)
+        // {
+        //     _db.Messages.Add(message);
+        //     await _db.SaveChangesAsync();
 
-            return CreatedAtAction("GetMessage", new { id = message.MessageId }, message);
-        }
+        //     return CreatedAtAction("GetMessage", new { id = message.MessageId }, message);
+        // }
 
-        // DELETE: api/Messages/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMessage(int id)
-        {
-            var message = await _db.Messages.FindAsync(id);
-            if (message == null)
-            {
-                return NotFound();
-            }
+        // // DELETE: api/Messages/5
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> DeleteMessage(int id)
+        // {
+        //     var message = await _db.Messages.FindAsync(id);
+        //     if (message == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            _db.Messages.Remove(message);
-            await _db.SaveChangesAsync();
+        //     _db.Messages.Remove(message);
+        //     await _db.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
 
         private bool MessageExists(int id)
         {
