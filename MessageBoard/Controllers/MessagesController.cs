@@ -22,13 +22,18 @@ namespace MessageBoard.Controllers
 
         // GET: api/Messages
         [HttpGet]
-        public async Task<List<Message>> Get(string subject, string group)
+        public async Task<List<Message>> Get(string subject, string body, string group)
         {
             IQueryable<Message> query = _db.Messages.AsQueryable();
 
             if (subject != null)
             {
                 query = query.Where(entry => entry.Subject.Contains(subject));
+            }
+
+            if (body != null)
+            {
+                query = query.Where(entry => entry.Body.Contains(body));
             }
 
             if (group != null)
@@ -44,7 +49,7 @@ namespace MessageBoard.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Message>> GetMessage(int id)
         {
-            var message = await _db.Messages.FindAsync(id);
+            Message message = await _db.Messages.FindAsync(id);
 
             if (message == null)
             {
@@ -57,7 +62,7 @@ namespace MessageBoard.Controllers
         // PUT: api/Messages/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMessage(int id, Message message)
+        public async Task<IActionResult> Put(int id, Message message)
         {
             if (id != message.MessageId)
             {
@@ -87,30 +92,30 @@ namespace MessageBoard.Controllers
 
         // POST: api/Messages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPost]
-        // public async Task<ActionResult<Message>> PostMessage(Message message)
-        // {
-        //     _db.Messages.Add(message);
-        //     await _db.SaveChangesAsync();
+        [HttpPost]
+        public async Task<ActionResult<Message>> Post([FromBody] Message message)
+        {
+            _db.Messages.Add(message);
+            await _db.SaveChangesAsync();
 
-        //     return CreatedAtAction("GetMessage", new { id = message.MessageId }, message);
-        // }
+            return CreatedAtAction("GetMessage", new { id = message.MessageId }, message);
+        }
 
         // // DELETE: api/Messages/5
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeleteMessage(int id)
-        // {
-        //     var message = await _db.Messages.FindAsync(id);
-        //     if (message == null)
-        //     {
-        //         return NotFound();
-        //     }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMessage(int id)
+        {
+            Message message = await _db.Messages.FindAsync(id);
+            if (message == null)
+            {
+                return NotFound();
+            }
 
-        //     _db.Messages.Remove(message);
-        //     await _db.SaveChangesAsync();
+            _db.Messages.Remove(message);
+            await _db.SaveChangesAsync();
 
-        //     return NoContent();
-        // }
+            return NoContent();
+        }
 
         private bool MessageExists(int id)
         {
