@@ -12,7 +12,7 @@ Currently we support the following client binding
 - JavaScript
   `"https://localhost:2001/api/Messages"`
 
-#### Endpoints
+## Endpoints
 
 1. **GET: api/Messages**
 
