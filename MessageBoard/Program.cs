@@ -19,28 +19,31 @@ builder.Services.AddDbContext<MessageBoardContext>(
 
 
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 //new code
-builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
 {
   options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
   options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+  options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
-  options.SaveToken = true;
+  // options.SaveToken = true;
   options.TokenValidationParameters = new TokenValidationParameters
   {
     ValidateIssuer = true,
     ValidateAudience = true,
     ValidAudience = "http://localhost:2000;https://localhost:2001",
     ValidIssuer = "http://localhost:2000;https://localhost:2001",  // Include both HTTP and HTTPS URLs,
-    ClockSkew = TimeSpan.Zero,
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("dummyKey"))
+    ValidateLifetime = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("DemoKey")),
+    ValidateIssuerSigningKey = true
   };
 });
+
+builder.Services.AddAuthorization();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
